@@ -80,8 +80,7 @@ jobs:
         run: |
           curl -sSL -o /tmp/gl.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz
           tar -xzf /tmp/gl.tar.gz -C /tmp gitleaks
-          /tmp/gitleaks detect --redact --verbose --report-format text --report-path /tmp/leaks.txt || \
-            { echo "Vazamentos encontrados:"; tail -50 /tmp/leaks.txt; exit 1; }
+          /tmp/gitleaks detect --redact --verbose
 
   e2e:
     name: E2E (Playwright)
