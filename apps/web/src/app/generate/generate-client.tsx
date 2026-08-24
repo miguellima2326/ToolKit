@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { Download, ExternalLink, QrCode } from 'lucide-react';
+import { Download, ExternalLink, QrCode, X } from 'lucide-react';
 import {
   DISTRO_LABELS,
   LINUX_DISTROS,
@@ -18,6 +18,7 @@ import { useKitStore } from '@/lib/kit-store';
 import { useI18n } from '@/lib/i18n';
 import { useDetectedSystem } from '@/lib/os-detect';
 import { CopyButton } from '@/components/copy-button';
+import { AppIcon } from '@/components/app-icon';
 
 function QrImage({ url }: { url: string }) {
   const [src, setSrc] = useState<string | null>(null);
@@ -43,6 +44,8 @@ function QrImage({ url }: { url: string }) {
 
 export function GenerateClient() {
   const items = useKitStore((s) => s.items);
+  const remove = useKitStore((s) => s.remove);
+  const clear = useKitStore((s) => s.clear);
   const detected = useDetectedSystem();
   const { t } = useI18n();
 
@@ -50,6 +53,7 @@ export function GenerateClient() {
   const [distro, setDistro] = useState<LinuxDistro>('ubuntu');
   const [format, setFormat] = useState<'ps1' | 'bat'>('ps1');
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [confirmClear, setConfirmClear] = useState(false);
 
   useEffect(() => {
     if (detected) {
@@ -57,6 +61,12 @@ export function GenerateClient() {
       if (detected.distro && detected.distro !== 'other') setDistro(detected.distro);
     }
   }, [detected]);
+
+  useEffect(() => {
+    if (!confirmClear) return;
+    const timer = window.setTimeout(() => setConfirmClear(false), 3000);
+    return () => window.clearTimeout(timer);
+  }, [confirmClear]);
 
   const slugs = useMemo(() => items.map((i) => i.slug), [items]);
 
@@ -121,6 +131,47 @@ export function GenerateClient() {
               {items.length} aplicativo{items.length > 1 ? 's' : ''} selecionado
               {items.length > 1 ? 's' : ''}
             </p>
+
+            <ul className="mt-3 max-h-56 space-y-1.5 overflow-y-auto scrollbar-thin">
+              {items.map((item) => (
+                <li
+                  key={item.slug}
+                  className="flex items-center gap-2 rounded-md border border-border bg-bg px-2 py-1.5"
+                >
+                  <AppIcon slug={item.iconKey} name={item.name} color={item.color} size={20} />
+                  <span className="min-w-0 flex-1 truncate text-xs font-medium">{item.name}</span>
+                  <button
+                    onClick={() => remove(item.slug)}
+                    aria-label={`${t((d) => d.kit.remove)} ${item.name}`}
+                    title={t((d) => d.kit.remove)}
+                    className="shrink-0 text-muted hover:text-warning"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            <button
+              onClick={() => {
+                if (!confirmClear) {
+                  setConfirmClear(true);
+                  return;
+                }
+                clear();
+                setConfirmClear(false);
+                setShareUrl(null);
+              }}
+              className={cn(
+                'mt-3 h-9 w-full rounded-md text-xs font-medium transition-colors',
+                confirmClear
+                  ? 'border border-warning bg-warning/10 text-warning'
+                  : 'border border-border bg-bg text-muted hover:text-fg'
+              )}
+            >
+              {confirmClear ? t((d) => d.kit.clearConfirm) : t((d) => d.kit.clear)}
+            </button>
+
             <div className="mt-3 space-y-3">
               <div>
                 <span className="mb-1.5 block text-xs text-muted">Sistema</span>
