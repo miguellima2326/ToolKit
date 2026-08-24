@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Plus, Star } from 'lucide-react';
+import { Check, Plus, Star, X } from 'lucide-react';
 import Link from 'next/link';
 import type { AppSummary } from '@toolkit/shared';
 import { cn } from '@toolkit/shared';
@@ -17,12 +17,16 @@ export function AddButton({
   size?: 'sm' | 'md';
 }) {
   const add = useKitStore((s) => s.add);
+  const remove = useKitStore((s) => s.remove);
   const has = useKitStore((s) => s.items.some((i) => i.slug === app.slug));
   const [justAdded, setJustAdded] = useState(false);
   const { t } = useI18n();
 
-  const handleAdd = () => {
-    if (has) return;
+  const handleToggle = () => {
+    if (has) {
+      remove(app.slug);
+      return;
+    }
     if (add({ slug: app.slug, name: app.name, iconKey: app.iconKey, color: app.color })) {
       setJustAdded(true);
       window.setTimeout(() => setJustAdded(false), 1200);
@@ -32,20 +36,24 @@ export function AddButton({
   return (
     <button
       type="button"
-      onClick={handleAdd}
-      disabled={has}
+      onClick={handleToggle}
       className={cn(
-        'inline-flex shrink-0 items-center gap-1.5 rounded-md font-medium transition-all',
+        'group/btn inline-flex shrink-0 items-center gap-1.5 rounded-md font-medium transition-all',
         size === 'sm' ? 'h-7 px-2 text-xs' : 'h-8 px-3 text-[13px]',
         has
-          ? 'border border-success/50 bg-success/10 text-success'
+          ? 'border border-success/50 bg-success/10 text-success hover:border-warning/60 hover:bg-warning/10 hover:text-warning'
           : 'border border-primary bg-primary text-primary-fg hover:opacity-90'
       )}
-      aria-label={`${t((d) => d.card.add)} ${app.name}`}
+      aria-label={`${has ? t((d) => d.card.remove) : t((d) => d.card.add)} ${app.name}`}
+      aria-pressed={has}
+      title={has ? t((d) => d.card.remove) : t((d) => d.card.add)}
     >
       {has ? (
         <>
-          <Check className="h-3.5 w-3.5" /> {t((d) => d.card.added)}
+          <Check className="h-3.5 w-3.5 group-hover/btn:hidden" />
+          <X className="hidden h-3.5 w-3.5 group-hover/btn:block" />
+          <span className="group-hover/btn:hidden">{t((d) => d.card.added)}</span>
+          <span className="hidden group-hover/btn:inline">{t((d) => d.card.remove)}</span>
         </>
       ) : (
         <>

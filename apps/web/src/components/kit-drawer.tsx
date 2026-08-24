@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, Share2, Trash2, X } from 'lucide-react';
@@ -17,8 +17,25 @@ export function KitDrawer({ open, onClose }: { open: boolean; onClose: () => voi
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [sharing, setSharing] = useState(false);
   const [listName, setListName] = useState('');
+  const [confirmClear, setConfirmClear] = useState(false);
+
+  useEffect(() => {
+    if (!confirmClear) return;
+    const timer = window.setTimeout(() => setConfirmClear(false), 3000);
+    return () => window.clearTimeout(timer);
+  }, [confirmClear]);
 
   if (!open) return null;
+
+  const handleClear = () => {
+    if (!confirmClear) {
+      setConfirmClear(true);
+      return;
+    }
+    clear();
+    setConfirmClear(false);
+    setShareUrl(null);
+  };
 
   const handleShare = async () => {
     if (items.length === 0) return;
@@ -146,10 +163,12 @@ export function KitDrawer({ open, onClose }: { open: boolean; onClose: () => voi
                 {t((d) => d.kit.generate)}
               </button>
               <button
-                onClick={() => clear()}
-                className="h-10 rounded-md border border-border bg-bg text-sm font-medium text-muted hover:text-fg"
+                onClick={handleClear}
+                className={confirmClear
+                  ? 'h-10 rounded-md border border-warning bg-warning/10 text-sm font-semibold text-warning'
+                  : 'h-10 rounded-md border border-border bg-bg text-sm font-medium text-muted hover:text-fg'}
               >
-                {t((d) => d.kit.clear)}
+                {confirmClear ? t((d) => d.kit.clearConfirm) : t((d) => d.kit.clear)}
               </button>
             </div>
             <button

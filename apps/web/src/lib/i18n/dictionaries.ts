@@ -38,12 +38,13 @@ const ptBR = {
     prevPage: 'Página anterior',
     nextPage: 'Próxima página'
   },
-  card: { add: 'Adicionar', added: 'Adicionado' },
+  card: { add: 'Adicionar', added: 'Adicionado', remove: 'Remover' },
   kit: {
     title: 'Meu Toolkit',
     empty: 'Seu Toolkit está vazio.',
     emptyHint: 'Adicione aplicativos para gerar um script de instalação.',
     clear: 'Limpar seleção',
+    clearConfirm: 'Confirmar limpeza?',
     generate: 'Gerar instalação',
     share: 'Compartilhar link',
     remove: 'Remover',
@@ -123,13 +124,14 @@ const enUS: Dict = {
     prevPage: 'Previous page',
     nextPage: 'Next page'
   },
-  card: { add: 'Add', added: 'Added' },
+  card: { add: 'Add', added: 'Added', remove: 'Remove' },
   kit: {
     title: 'My Toolkit',
     empty: 'Your Toolkit is empty.',
     emptyHint: 'Add apps to generate an install script.',
     clear: 'Clear selection',
-    generate: 'Generate installation',
+    clearConfirm: 'Confirm clear?',
+    generate: 'Generate install',
     share: 'Share link',
     remove: 'Remove',
     items: '{count} selected'
