@@ -12,7 +12,19 @@ const prisma = new PrismaClient({ log: ['error'] });
 async function main() {
   const app = await buildApp({
     prisma,
-    env,
+    // Mapeamento explícito: `env` (Env do zod) tem CROSS_SITE_COOKIES (maiúsculo,
+    // igual ao nome da variável); BuildOptions.env espera crossSiteCookies
+    // (camelCase). Passar `env` direto fazia opts.env.crossSiteCookies ser sempre
+    // undefined — TS não acusava porque o campo é opcional — e o cookie de admin
+    // saía sempre SameSite=Lax, quebrando login cross-site (Vercel <-> Render)
+    // mesmo com CROSS_SITE_COOKIES=true configurado.
+    env: {
+      NODE_ENV: env.NODE_ENV,
+      WEB_ORIGIN: env.WEB_ORIGIN,
+      SESSION_SECRET: env.SESSION_SECRET,
+      ADMIN_TOKEN: env.ADMIN_TOKEN,
+      crossSiteCookies: env.CROSS_SITE_COOKIES
+    },
     redis: null
   });
 
