@@ -7,8 +7,10 @@ export interface CatalogAppRow extends Omit<AppSummary, 'hasLocalIcon'> {
   updatedAt?: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+// || (não ??) de propósito: uma env var configurada em branco (string vazia) deve
+// cair no fallback igual a não-configurada — senão `new URL('')` quebra o build.
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 export { API_URL };
 

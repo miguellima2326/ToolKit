@@ -11,6 +11,9 @@ COPY packages/database/package.json packages/database/
 COPY packages/catalog/package.json packages/catalog/
 COPY packages/install-generator/package.json packages/install-generator/
 COPY packages/tsconfig/package.json packages/tsconfig/
+# postinstall de @toolkit/database roda `prisma generate`, que precisa do schema
+# já presente neste estágio (só os package.json foram copiados até aqui).
+COPY packages/database/prisma packages/database/prisma
 RUN pnpm install --frozen-lockfile
 
 FROM deps AS build

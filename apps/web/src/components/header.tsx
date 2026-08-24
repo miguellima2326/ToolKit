@@ -32,7 +32,7 @@ export function Header() {
     { href: '/docs', label: t((d) => d.nav.docs) }
   ];
 
-  const githubUrl = process.env.NEXT_PUBLIC_GITHUB_URL ?? 'https://github.com/toolkit-dev/toolkit';
+  const githubUrl = process.env.NEXT_PUBLIC_GITHUB_URL || 'https://github.com/toolkit-dev/toolkit';
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/85 backdrop-blur-md">

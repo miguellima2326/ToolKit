@@ -18,7 +18,7 @@ export default async function StatusPage() {
   let health: HealthResponse | null = null;
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'}/health/detailed`,
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/health/detailed`,
       { next: { revalidate: 30 } }
     );
     if (res.ok) health = (await res.json()) as HealthResponse;

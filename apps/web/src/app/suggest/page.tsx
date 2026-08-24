@@ -2,7 +2,7 @@
 
 import { SUGGEST_CATEGORIES } from './categories';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export default function SuggestPage() {
   return (
