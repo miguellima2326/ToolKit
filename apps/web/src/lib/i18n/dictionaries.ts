@@ -33,7 +33,10 @@ const ptBR = {
     sortName: 'A-Z',
     clear: 'Limpar filtros',
     results: '{count} aplicativos',
-    favoritesOnly: 'Somente favoritos'
+    favoritesOnly: 'Somente favoritos',
+    pageInfo: 'Página {page} de {total}',
+    prevPage: 'Página anterior',
+    nextPage: 'Próxima página'
   },
   card: { add: 'Adicionar', added: 'Adicionado' },
   kit: {
@@ -115,7 +118,10 @@ const enUS: Dict = {
     sortName: 'A-Z',
     clear: 'Clear filters',
     results: '{count} apps',
-    favoritesOnly: 'Favorites only'
+    favoritesOnly: 'Favorites only',
+    pageInfo: 'Page {page} of {total}',
+    prevPage: 'Previous page',
+    nextPage: 'Next page'
   },
   card: { add: 'Add', added: 'Added' },
   kit: {

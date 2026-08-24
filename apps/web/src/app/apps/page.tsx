@@ -24,7 +24,8 @@ export default async function AppsPage({
     arch: pick('arch'),
     license: pick('license'),
     method: pick('method'),
-    sort: pick('sort') ?? 'popular'
+    sort: pick('sort') ?? 'popular',
+    page: Math.max(1, Number(pick('page') ?? 1) || 1)
   };
 
   const [initial, categories] = await Promise.all([
