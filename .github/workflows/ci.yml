@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint · Typecheck · Test · Build
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: toolkit
+          POSTGRES_PASSWORD: toolkit
+          POSTGRES_DB: toolkit
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U toolkit"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://toolkit:toolkit@localhost:5432/toolkit?schema=public
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Migrate & seed
+        run: |
+          pnpm --filter @toolkit/database exec prisma migrate deploy
+          pnpm db:seed
+
+      - name: Lint
+        run: turbo lint
+
+      - name: Typecheck
+        run: turbo typecheck
+
+      - name: Unit tests
+        run: pnpm --filter @toolkit/shared test && pnpm --filter @toolkit/install-generator test && pnpm --filter @toolkit/api test
+
+      - name: Build web
+        run: pnpm --filter web build
+
+  security-scan:
+    name: Dependency audit & secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: pnpm audit (high+)
+        run: pnpm audit --prod --audit-level high || true
+      - name: Gitleaks (secret scanning)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: toolkit
+          POSTGRES_PASSWORD: toolkit
+          POSTGRES_DB: toolkit
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U toolkit"
+          --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9.15.9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @toolkit/database exec prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://toolkit:toolkit@localhost:5432/toolkit?schema=public
+      - run: pnpm db:seed
+        env:
+          DATABASE_URL: postgresql://toolkit:toolkit@localhost:5432/toolkit?schema=public
+      - run: pnpm exec playwright install chromium --with-deps
+        working-directory: apps/web
+      - run: pnpm e2e
+        working-directory: apps/web
+        env:
+          DATABASE_URL: postgresql://toolkit:toolkit@localhost:5432/toolkit?schema=public

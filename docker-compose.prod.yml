@@ -1,0 +1,73 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-toolkit}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-toolkit}
+      POSTGRES_DB: ${POSTGRES_DB:-toolkit}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-toolkit}']
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      retries: 10
+
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: build
+    working_dir: /app/packages/database
+    command: sh -c "pnpm exec prisma migrate deploy && pnpm run seed"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-toolkit}:${POSTGRES_PASSWORD:-toolkit}@db:5432/${POSTGRES_DB:-toolkit}?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-toolkit}:${POSTGRES_PASSWORD:-toolkit}@db:5432/${POSTGRES_DB:-toolkit}?schema=public
+      REDIS_URL: redis://redis:6379
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:3000}
+      SESSION_SECRET: ${SESSION_SECRET:?defina SESSION_SECRET}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?defina ADMIN_TOKEN}
+    ports:
+      - '4000:4000'
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:4000/health']
+      interval: 15s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
+    ports:
+      - '3000:3000'
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:

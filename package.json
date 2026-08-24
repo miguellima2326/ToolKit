@@ -1,0 +1,29 @@
+{
+  "name": "toolkit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Toolkit — Your apps. Your system. One place.",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20.17.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "db:migrate": "pnpm --filter @toolkit/database migrate",
+    "db:seed": "pnpm --filter @toolkit/database seed",
+    "format": "prettier --write \"**/*.{ts,tsx,css,json,md,yml,yaml}\""
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.2",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8"
+  }
+}

@@ -1,0 +1,273 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Os {
+  windows
+  linux
+  macos
+}
+
+enum Arch {
+  x64
+  arm64
+  x86
+  universal
+}
+
+enum LicenseType {
+  open_source
+  freeware
+  freemium
+  paid
+}
+
+enum InstallMethod {
+  winget
+  chocolatey
+  scoop
+  msstore
+  apt
+  dnf
+  pacman
+  flatpak
+  snap
+  appimage
+  brew_formula
+  brew_cask
+  mas
+  official_installer
+  download
+}
+
+enum SourceKind {
+  official
+  community
+  system
+}
+
+enum Status {
+  verified
+  pending_review
+  deprecated
+  blocked
+}
+
+enum CollectionKind {
+  profile
+  shared
+}
+
+enum ContributionStatus {
+  pending
+  approved
+  rejected
+}
+
+model Vendor {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  websiteUrl  String?
+  verified    Boolean   @default(false)
+  apps        App[]
+  drivers     Driver[]
+
+  @@index([name])
+}
+
+model Category {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  description String?
+  sortOrder   Int          @default(100)
+  apps        App[]
+  collections Collection[]
+
+  @@index([name])
+}
+
+model App {
+  id           String       @id @default(cuid())
+  slug         String       @unique
+  name         String
+  tagline      String
+  description  String
+  websiteUrl   String
+  license      LicenseType
+  iconKey      String
+  color        String       @default("#71717A")
+  version      String?
+  popularity   Int          @default(50)
+  status       Status       @default(pending_review)
+  tags         String[]
+  archs        Arch[]
+  oss          Os[]
+  addedAt      DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  verifiedAt   DateTime?
+  vendorId     String
+  vendor       Vendor       @relation(fields: [vendorId], references: [id])
+  categoryId   String
+  category     Category     @relation(fields: [categoryId], references: [id])
+  packages     AppPackage[]
+  alternatives String[]
+  collections  CollectionItem[]
+
+  @@index([status, popularity])
+  @@index([categoryId])
+  @@index([vendorId])
+  @@index([name])
+  @@index([updatedAt])
+}
+
+model AppPackage {
+  id             String        @id @default(cuid())
+  appId          String
+  app            App           @relation(fields: [appId], references: [id], onDelete: Cascade)
+  method         InstallMethod
+  os             Os
+  packageId      String?
+  repository     String?
+  source         SourceKind
+  status         Status        @default(pending_review)
+  notes          String?
+  classic        Boolean       @default(false)
+  downloadUrl    String?
+  lastCheckedAt  DateTime?
+  verifications  Verification[]
+
+  @@unique([appId, method, os, packageId])
+  @@index([appId])
+  @@index([method, status])
+  @@index([packageId])
+}
+
+model Verification {
+  id            String     @id @default(cuid())
+  packageId     String
+  appPackage    AppPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  sha256        String?
+  signatureNote String?
+  checkedAt     DateTime   @default(now())
+  result        Status
+
+  @@index([checkedAt])
+}
+
+model Driver {
+  id              String         @id @default(cuid())
+  slug            String         @unique
+  name            String
+  tagline         String
+  instructions    String
+  downloadUrl     String
+  vendorId        String
+  vendor          Vendor         @relation(fields: [vendorId], references: [id])
+  categories      String[]
+  oss             Os[]
+  status          Status         @default(pending_review)
+  updatedAt       DateTime       @updatedAt
+
+  @@index([status])
+  @@index([name])
+}
+
+model HardwareVendor {
+  id          String @id @default(cuid())
+  slug        String @unique
+  name        String
+  supportUrl  String
+  kind        String
+  sortOrder   Int    @default(100)
+
+  @@index([kind])
+}
+
+model Collection {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  name        String
+  description String
+  kind        CollectionKind   @default(profile)
+  categoryId  String?
+  category    Category?        @relation(fields: [categoryId], references: [id])
+  items       CollectionItem[]
+  createdAt   DateTime         @default(now())
+
+  @@index([kind])
+}
+
+model CollectionItem {
+  id           String     @id @default(cuid())
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  appId        String
+  app          App        @relation(fields: [appId], references: [id], onDelete: Cascade)
+  position     Int
+
+  @@unique([collectionId, appId])
+  @@index([collectionId])
+}
+
+model SharedToolkit {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  title     String?
+  slugs     String[]
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model Contribution {
+  id                String             @id @default(cuid())
+  name              String
+  websiteUrl        String
+  categorySlug      String?
+  operatingSystems  Os[]
+  wingetId          String?
+  brewId            String?
+  flatpakId         String?
+  notes             String?
+  contact           String?
+  status            ContributionStatus @default(pending)
+  reviewNote        String?
+  createdAt         DateTime           @default(now())
+  reviewedAt        DateTime?
+
+  @@index([status, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actor     String
+  action    String
+  target    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([actor, action])
+}
+
+model ScriptStat {
+  id        String   @id @default("global")
+  total     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  role      String   @default("user")
+  mfaSecret String?
+  createdAt DateTime @default(now())
+}

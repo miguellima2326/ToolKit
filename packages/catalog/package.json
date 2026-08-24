@@ -1,0 +1,26 @@
+{
+  "name": "@toolkit/catalog",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "verify": "tsx scripts/verify-packages.mts"
+  },
+  "dependencies": {
+    "@toolkit/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@toolkit/tsconfig": "workspace:*",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
