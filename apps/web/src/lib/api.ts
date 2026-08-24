@@ -7,10 +7,16 @@ export interface CatalogAppRow extends Omit<AppSummary, 'hasLocalIcon'> {
   updatedAt?: string;
 }
 
-// || (não ??) de propósito: uma env var configurada em branco (string vazia) deve
-// cair no fallback igual a não-configurada — senão `new URL('')` quebra o build.
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+// Garante o protocolo mesmo se a env var vier sem "https://" (erro comum de
+// configuração) — sem isso, new URL() no layout.tsx quebra o build com
+// ERR_INVALID_URL. || (não ??) de propósito: string vazia também cai no fallback.
+function withProtocol(url: string, fallback: string): string {
+  if (!url) return fallback;
+  return /^https?:\/\//.test(url) ? url : `https://${url}`;
+}
+
+const API_URL = withProtocol(process.env.NEXT_PUBLIC_API_URL || '', 'http://localhost:4000');
+export const SITE_URL = withProtocol(process.env.NEXT_PUBLIC_SITE_URL || '', 'http://localhost:3000');
 
 export { API_URL };
 
