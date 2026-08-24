@@ -305,18 +305,19 @@ export const appsC: CatalogApp[] = [
     categorySlug: 'produtividade',
     tagline: 'Suíte de escritório Word, Excel, PowerPoint e Outlook.',
     description:
-      'Instalador do Microsoft 365 Apps (antigo Office): Word, Excel, PowerPoint, Outlook e demais aplicativos. Requer assinatura Microsoft 365 ativa para uso completo.',
+      'Instalador oficial do Microsoft 365 Apps (antigo Office), baixado direto do CDN da Microsoft: Word, Excel, PowerPoint, Outlook e demais aplicativos. Após instalar, é preciso fazer login com uma conta Microsoft com assinatura Microsoft 365 ativa para ativar o uso completo.',
     websiteUrl: 'https://www.microsoft.com/microsoft-365',
     license: 'paid',
     color: '#D83B01',
     popularity: 65,
     updatedDaysAgo: 7,
     tags: ['office', 'escritório', 'produtividade', 'word', 'excel'],
-    oss: ['windows'],
+    oss: ['windows', 'macos'],
     archs: ['x64', 'arm64'],
     alternatives: ['libreoffice', 'onlyoffice-editors'],
     packages: [
-      W('Microsoft.Office')
+      W('Microsoft.Office'),
+      BC('microsoft-office', { notes: 'Requer macOS 14 (Sonoma) ou mais recente.' })
     ]
   }),
 
