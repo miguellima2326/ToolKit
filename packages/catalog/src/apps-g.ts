@@ -1,5 +1,5 @@
 import type { CatalogApp } from './types';
-import { AP, BC, DL, DN, PC, W } from './types';
+import { AP, BC, DL, DN, PC, OI, W } from './types';
 
 const a = (
   base: Omit<CatalogApp, 'iconKey' | 'status' | 'version'> & Partial<Pick<CatalogApp, 'iconKey' | 'status' | 'version'>>
@@ -674,5 +674,72 @@ export const appsG: CatalogApp[] = [
     archs: ['x64', 'arm64'],
     alternatives: ['visual-studio-code'],
     packages: [W('WinMerge.WinMerge')]
+  }),
+  a({
+    slug: 'sonicwall-netextender',
+    name: 'SonicWall NetExtender',
+    vendor: 'SonicWall',
+    categorySlug: 'sysadmin',
+    tagline: 'Cliente VPN SSL para firewalls SonicWall.',
+    description:
+      'Cliente oficial de acesso remoto VPN SSL da SonicWall, usado para conectar a redes corporativas com firewall SonicWall. Configure com o endereço do servidor, domínio e credenciais fornecidos pelo TI da empresa.',
+    websiteUrl: 'https://www.sonicwall.com/support/downloads/',
+    license: 'freeware',
+    color: '#D6402F',
+    popularity: 35,
+    updatedDaysAgo: 20,
+    tags: ['vpn', 'ssl vpn', 'sonicwall', 'rede corporativa', 'vpn corporativa', 'acesso remoto'],
+    oss: ['windows'],
+    archs: ['x64'],
+    alternatives: ['forticlient-vpn'],
+    packages: [W('SonicWall.NetExtender')]
+  }),
+  a({
+    slug: 'forticlient-vpn',
+    name: 'FortiClient VPN',
+    vendor: 'Fortinet',
+    categorySlug: 'sysadmin',
+    tagline: 'Cliente VPN IPsec/SSL gratuito da Fortinet.',
+    description:
+      'Cliente VPN gratuito (somente os módulos de VPN IPsec e SSL) para conectar a firewalls FortiGate. A Fortinet não distribui via winget — baixe o instalador "FortiClient VPN only" no portal oficial e configure com servidor/chave pré-compartilhada fornecidos pelo TI.',
+    websiteUrl: 'https://www.fortinet.com/support/product-downloads',
+    license: 'freeware',
+    color: '#DA291C',
+    popularity: 38,
+    updatedDaysAgo: 20,
+    tags: ['vpn', 'fortinet', 'ssl vpn', 'ipsec', 'rede corporativa', 'vpn corporativa', 'acesso remoto'],
+    oss: ['windows'],
+    archs: ['x64'],
+    alternatives: ['sonicwall-netextender'],
+    packages: [OI('https://www.fortinet.com/support/product-downloads', 'windows')]
+  }),
+  a({
+    slug: 'google-chat',
+    name: 'Google Chat',
+    vendor: 'Google',
+    categorySlug: 'comunicacao',
+    tagline: 'Mensageria corporativa do Google Workspace.',
+    description:
+      'Chat de equipes do Google Workspace (antes Hangouts Chat): conversas diretas, salas (spaces), compartilhamento de arquivos do Drive e integração com Gmail. O Google não distribui app desktop — instale como PWA: abra chat.google.com no Chrome e use "Instalar" no menu de endereço.',
+    websiteUrl: 'https://chat.google.com/',
+    license: 'freemium',
+    color: '#00AC47',
+    popularity: 42,
+    updatedDaysAgo: 10,
+    tags: ['chat', 'mensagens', 'conversa', 'google', 'workspace', 'corporativo'],
+    oss: ['windows', 'macos', 'linux'],
+    archs: ['x64'],
+    alternatives: ['slack', 'microsoft-teams'],
+    packages: [
+      DL('https://chat.google.com/', 'windows', {
+        notes: 'Sem instalador oficial — use "Instalar" no Chrome para criar o app (PWA).'
+      }),
+      DL('https://chat.google.com/', 'macos', {
+        notes: 'Sem instalador oficial — use "Instalar" no Chrome para criar o app (PWA).'
+      }),
+      DL('https://chat.google.com/', 'linux', {
+        notes: 'Sem instalador oficial — use "Instalar" no Chrome/Chromium para criar o app (PWA).'
+      })
+    ]
   })
 ];
