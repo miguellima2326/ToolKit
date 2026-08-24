@@ -49,10 +49,10 @@ jobs:
           pnpm db:seed
 
       - name: Lint
-        run: turbo lint
+        run: pnpm exec turbo run lint
 
       - name: Typecheck
-        run: turbo typecheck
+        run: pnpm exec turbo run typecheck
 
       - name: Unit tests
         run: pnpm --filter @toolkit/shared test && pnpm --filter @toolkit/install-generator test && pnpm --filter @toolkit/api test
@@ -76,10 +76,12 @@ jobs:
           cache: pnpm
       - name: pnpm audit (high+)
         run: pnpm audit --prod --audit-level high || true
-      - name: Gitleaks (secret scanning)
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Secret scan (gitleaks)
+        run: |
+          curl -sSL -o /tmp/gl.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz
+          tar -xzf /tmp/gl.tar.gz -C /tmp gitleaks
+          /tmp/gitleaks detect --redact --verbose --report-format text --report-path /tmp/leaks.txt || \
+            { echo "Vazamentos encontrados:"; tail -50 /tmp/leaks.txt; exit 1; }
 
   e2e:
     name: E2E (Playwright)
