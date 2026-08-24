@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Github, Linkedin } from 'lucide-react';
 import { LogoMark } from './logo';
 
 export function Footer() {
@@ -47,9 +48,34 @@ export function Footer() {
         />
       </div>
       <div className="border-t border-border py-4">
-        <p className="text-center text-xs text-muted">
-          © {new Date().getFullYear()} Toolkit · Open source · Feito para quem formata PC
-        </p>
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 sm:flex-row sm:justify-between">
+          <p className="text-center text-xs text-muted">
+            © {new Date().getFullYear()} Toolkit · Open source · Feito para quem formata PC
+          </p>
+          <p className="flex items-center gap-3 text-xs text-muted">
+            <span>
+              Feito por <span className="font-medium text-fg">Miguel Lima</span>
+            </span>
+            <a
+              href="https://github.com/miguellima2326"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub de Miguel Lima"
+              className="text-muted transition-colors hover:text-fg"
+            >
+              <Github className="h-4 w-4" />
+            </a>
+            <a
+              href="https://linkedin.com/in/miguel-lima-845666252"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn de Miguel Lima"
+              className="text-muted transition-colors hover:text-fg"
+            >
+              <Linkedin className="h-4 w-4" />
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );
