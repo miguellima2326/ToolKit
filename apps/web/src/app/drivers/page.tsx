@@ -6,7 +6,8 @@ import { OS_LABELS } from '@toolkit/shared';
 
 export const metadata: Metadata = {
   title: 'Drivers',
-  description: 'Drivers de GPU, áudio, rede e chipset direto das páginas oficiais dos fabricantes. NVIDIA, AMD, Intel, Realtek e mais.'
+  description:
+    'Drivers de GPU, áudio, rede, chipset, armazenamento e impressoras direto das páginas oficiais dos fabricantes. NVIDIA, AMD, Intel, Realtek, HP, Epson e mais.'
 };
 
 export const revalidate = 600;

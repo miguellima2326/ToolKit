@@ -38,11 +38,16 @@ async function main() {
       create: { slug, name, verified: true }
     });
   }
+  const driverVendorNames: Record<string, string> = {
+    hp: 'HP',
+    asrock: 'ASRock',
+    wd: 'Western Digital'
+  };
   for (const slug of driverVendorSlugs.keys()) {
     await prisma.vendor.upsert({
       where: { slug },
       update: {},
-      create: { slug, name: slug.charAt(0).toUpperCase() + slug.slice(1), verified: true }
+      create: { slug, name: driverVendorNames[slug] ?? slug.charAt(0).toUpperCase() + slug.slice(1), verified: true }
     });
   }
 
