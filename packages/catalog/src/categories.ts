@@ -20,6 +20,6 @@ export const categories = [
   { slug: 'terminal', name: 'Terminal', description: 'Shells e emuladores de terminal', sortOrder: 190 },
   { slug: 'devops', name: 'DevOps', description: 'Containers, CI/CD e infraestrutura', sortOrder: 200 },
   { slug: 'sysadmin', name: 'SysAdmin', description: 'Rede, acesso remoto e diagnóstico', sortOrder: 210 },
-  { slug: 'ia', name: 'IA Local', description: 'Modelos e assistentes locais', sortOrder: 220 },
+  { slug: 'ia', name: 'IA', description: 'Assistentes, agentes de código e modelos locais', sortOrder: 220 },
   { slug: 'educacao', name: 'Educação', description: 'Estudos e memorização', sortOrder: 230 }
 ];

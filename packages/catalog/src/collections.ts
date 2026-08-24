@@ -5,7 +5,7 @@ export const collections: CatalogCollection[] = [
     slug: 'pc-essencial',
     name: 'PC Essencial',
     description: 'O básico que todo computador precisa depois de formatado.',
-    itemSlugs: ['google-chrome', '7zip', 'vlc', 'sumatrapdf', 'discord']
+    itemSlugs: ['google-chrome', '7zip', 'vlc', 'sumatrapdf', 'discord', 'bitwarden']
   },
   {
     slug: 'dev-web',
@@ -18,7 +18,9 @@ export const collections: CatalogCollection[] = [
       'docker-desktop',
       'postman',
       'insomnia',
-      'dbeaver-ce'
+      'dbeaver-ce',
+      'github-cli',
+      'claude-code'
     ]
   },
   {
@@ -32,26 +34,55 @@ export const collections: CatalogCollection[] = [
       'git',
       'dbeaver-ce',
       'docker-desktop',
-      'postman'
+      'postman',
+      'github-cli'
     ]
   },
   {
     slug: 'dev-python',
     name: 'Desenvolvedor Python',
     description: 'Ambiente Python pronto para dados, scripts e backend.',
-    itemSlugs: ['python', 'visual-studio-code', 'git', 'docker-desktop', 'postman']
+    itemSlugs: ['python', 'miniconda', 'visual-studio-code', 'git', 'docker-desktop', 'postman', 'github-cli']
+  },
+  {
+    slug: 'ia-para-devs',
+    name: 'IA para Devs',
+    description: 'Agentes e IDEs de IA para programar mais rápido.',
+    itemSlugs: ['claude-code', 'codex-cli', 'opencode', 'cursor', 'windsurf', 'google-antigravity', 'ollama']
+  },
+  {
+    slug: 'seguranca-privacidade',
+    name: 'Segurança e Privacidade',
+    description: 'Senhas, criptografia e proteção básica contra malware.',
+    itemSlugs: ['bitwarden', 'keepassxc', 'veracrypt', 'cryptomator', 'malwarebytes']
+  },
+  {
+    slug: 'design-criativo',
+    name: 'Design Criativo',
+    description: 'Edição de imagem, ilustração e modelagem 3D.',
+    itemSlugs: ['figma', 'gimp', 'krita', 'inkscape', 'blender', 'paint-net', 'adobe-creative-cloud']
   },
   {
     slug: 'gaming',
     name: 'Gaming',
     description: 'Prepare a máquina para jogar e transmitir.',
-    itemSlugs: ['steam', 'epic-games-launcher', 'discord', 'obs-studio']
+    itemSlugs: [
+      'steam',
+      'epic-games-launcher',
+      'gog-galaxy',
+      'battle-net',
+      'ea-app',
+      'ubisoft-connect',
+      'discord',
+      'opera-gx',
+      'obs-studio'
+    ]
   },
   {
     slug: 'trabalho',
     name: 'Trabalho',
     description: 'Comunicação e produtividade corporativa em minutos.',
-    itemSlugs: ['google-chrome', 'microsoft-teams', 'zoom', 'slack', 'libreoffice']
+    itemSlugs: ['google-chrome', 'microsoft-teams', 'zoom', 'slack', 'microsoft-office', 'libreoffice', 'dropbox']
   },
   {
     slug: 'sysadmin',
@@ -75,12 +106,14 @@ export const collections: CatalogCollection[] = [
       'google-chrome',
       'mozilla-firefox',
       '7zip',
+      'winrar',
       'vlc',
       'discord',
       'spotify',
       'sumatrapdf',
       'libreoffice',
-      'whatsapp'
+      'whatsapp',
+      'malwarebytes'
     ]
   }
 ];
