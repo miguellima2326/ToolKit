@@ -42,8 +42,7 @@ export function Footer() {
           links={[
             { href: '/security', label: 'Segurança' },
             { href: '/privacy', label: 'Privacidade' },
-            { href: '/terms', label: 'Termos' },
-            { href: '/admin', label: 'Admin' }
+            { href: '/terms', label: 'Termos' }
           ]}
         />
       </div>
