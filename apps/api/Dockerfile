@@ -30,6 +30,18 @@ COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=deps /app/packages ./packages
 COPY apps/api/package.json apps/api/tsconfig.json ./apps/api/
 COPY apps/api/src ./apps/api/src
+# A API roda TypeScript direto via tsx (sem dist compilado), então os pacotes do
+# workspace que ela importa em runtime precisam do código-fonte, não só do
+# package.json (que é tudo que o estágio deps copiou).
+COPY packages/shared/src ./packages/shared/src
+COPY packages/database/src ./packages/database/src
+COPY packages/database/prisma ./packages/database/prisma
+COPY packages/catalog/src ./packages/catalog/src
+COPY packages/install-generator/src ./packages/install-generator/src
 EXPOSE 4000
 WORKDIR /app/apps/api
-CMD ["pnpm", "start"]
+# Roda o tsx direto (não "pnpm start"): o estágio runtime não tem
+# pnpm-workspace.yaml/package.json raiz, então "pnpm start" tentava
+# resolver o workspace a partir daqui e falhava (@toolkit/tsconfig
+# não encontrado). "start" só faz "tsx src/server.ts" mesmo.
+CMD ["node_modules/.bin/tsx", "src/server.ts"]

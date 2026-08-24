@@ -6,7 +6,10 @@ export const metadata: Metadata = {
   robots: { index: false }
 };
 
-export const revalidate = 30;
+// Página de status sempre renderizada por requisição — nunca em build. Sem isso,
+// o Next tenta pré-renderizar em build time e o fetch trava esperando a API
+// (que pode nem estar no ar ainda durante o deploy), estourando o timeout do build.
+export const dynamic = 'force-dynamic';
 
 interface HealthResponse {
   status: string;
@@ -19,7 +22,7 @@ export default async function StatusPage() {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/health/detailed`,
-      { next: { revalidate: 30 } }
+      { cache: 'no-store' }
     );
     if (res.ok) health = (await res.json()) as HealthResponse;
   } catch {
