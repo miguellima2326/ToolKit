@@ -1,5 +1,5 @@
 import type { CatalogApp } from './types';
-import { AP, BC, BF, FP, PC, W } from './types';
+import { AP, BC, BF, DL, FP, PC, W } from './types';
 
 const a = (
   base: Omit<CatalogApp, 'iconKey' | 'status' | 'version'> & Partial<Pick<CatalogApp, 'iconKey' | 'status' | 'version'>>
@@ -317,6 +317,54 @@ export const appsC: CatalogApp[] = [
     alternatives: ['libreoffice', 'onlyoffice-editors'],
     packages: [
       W('Microsoft.Office')
+    ]
+  }),
+
+  // ── IDEs agênticas de IA ────────────────────────────────────────────────
+  a({
+    slug: 'google-antigravity',
+    name: 'Google Antigravity',
+    vendor: 'Google',
+    categorySlug: 'desenvolvimento',
+    tagline: 'IDE agêntica do Google, fork do VS Code.',
+    description:
+      'Plataforma de desenvolvimento agêntico do Google: agentes de IA planejam, implementam, testam e iteram tarefas em múltiplos arquivos e workspaces, com a experiência familiar de um editor baseado em VS Code.',
+    websiteUrl: 'https://antigravity.google/',
+    license: 'freemium',
+    color: '#7C3AED',
+    popularity: 62,
+    updatedDaysAgo: 1,
+    tags: ['ide', 'ia', 'agente', 'vscode', 'google'],
+    oss: ['windows', 'macos', 'linux'],
+    archs: ['x64', 'arm64'],
+    alternatives: ['cursor', 'windsurf', 'visual-studio-code'],
+    packages: [
+      W('Google.AntigravityIDE'),
+      BC('antigravity-ide'),
+      DL('https://antigravity.google/download/linux', 'linux')
+    ]
+  }),
+  a({
+    slug: 'windsurf',
+    name: 'Windsurf',
+    vendor: 'Codeium',
+    categorySlug: 'desenvolvimento',
+    tagline: 'Editor de código com agente de IA (Cascade).',
+    description:
+      'Fork do VS Code com o agente Cascade: entende o contexto do projeto inteiro, executa mudanças multiarquivo, roda comandos e corrige erros com supervisão do desenvolvedor.',
+    websiteUrl: 'https://windsurf.com/',
+    license: 'freemium',
+    color: '#58E5C0',
+    popularity: 64,
+    updatedDaysAgo: 2,
+    tags: ['editor de código', 'ia', 'agente', 'vscode'],
+    oss: ['windows', 'macos', 'linux'],
+    archs: ['x64', 'arm64'],
+    alternatives: ['cursor', 'google-antigravity', 'visual-studio-code'],
+    packages: [
+      W('Codeium.Windsurf'),
+      BC('windsurf'),
+      DL('https://windsurf.com/download', 'linux')
     ]
   })
 ];
