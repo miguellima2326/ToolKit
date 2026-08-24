@@ -5,7 +5,32 @@ export const collections: CatalogCollection[] = [
     slug: 'pc-essencial',
     name: 'PC Essencial',
     description: 'O básico que todo computador precisa depois de formatado.',
-    itemSlugs: ['google-chrome', '7zip', 'vlc', 'sumatrapdf', 'discord', 'bitwarden']
+    itemSlugs: [
+      'google-chrome',
+      '7zip',
+      'vlc',
+      'sumatrapdf',
+      'discord',
+      'bitwarden',
+      'vc-redist-2015-2022-x64',
+      'vc-redist-2015-2022-x86',
+      'directx-end-user-runtime'
+    ]
+  },
+  {
+    slug: 'dependencias-essenciais',
+    name: 'Dependências Essenciais',
+    description:
+      'Runtimes e bibliotecas que jogos e programas pedem logo após a formatação — instale tudo de uma vez e pare de caçar erro de DLL.',
+    itemSlugs: [
+      'vc-redist-2015-2022-x64',
+      'vc-redist-2015-2022-x86',
+      'directx-end-user-runtime',
+      'dotnet-desktop-runtime-8',
+      'dotnet-desktop-runtime-10',
+      'dotnet-framework-481',
+      'corretto-jre8'
+    ]
   },
   {
     slug: 'dev-web',
