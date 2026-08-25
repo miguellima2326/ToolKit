@@ -1,15 +1,25 @@
-# @toolkit/cli
+# toolkit-cli
 
 CLI oficial do Toolkit — busca, instala e gerencia apps direto do terminal, consumindo a API pública `/api/v1` (a mesma que o site usa).
 
-## Rodando localmente (sem publicar)
+## Instalação
 
 ```bash
-pnpm --filter @toolkit/cli build
+npm install -g toolkit-cli
+# ou sem instalar:
+npx toolkit-cli --help
+```
+
+O binário instalado se chama `toolkit`.
+
+## Desenvolvendo no monorepo
+
+```bash
+pnpm --filter toolkit-cli build
 node packages/cli/dist/index.js --help
 
 # ou em modo dev, sem build:
-pnpm --filter @toolkit/cli dev -- --help
+pnpm --filter toolkit-cli dev -- --help
 ```
 
 ## Configuração (opcional)
@@ -34,7 +44,10 @@ toolkit doctor                    Diagnóstico local: SO, gerenciadores de pacot
 
 `toolkit install` sempre mostra o script completo e o resumo (automático/manual/indisponível) antes de perguntar se deve executar — a CLI nunca roda nada sem confirmação, a menos que `--yes` seja passado explicitamente.
 
+## Build
+
+O pacote publicado é um único arquivo (`dist/index.js`, bundle CJS via tsup) sem dependências de runtime — todas as libs (commander, @clack/prompts, picocolors, @toolkit/shared) são embutidas no build.
+
 ## Fora do escopo desta versão
 
 - `toolkit upgrade` e `toolkit driver scan` (roadmap futuro).
-- Publicação no npm — hoje o pacote é `private`, só roda via workspace (`pnpm --filter @toolkit/cli`).
