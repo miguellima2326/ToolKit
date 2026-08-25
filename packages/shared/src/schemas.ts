@@ -122,6 +122,14 @@ export const installScriptRequestSchema = z
   .refine((v) => v.os !== 'linux' || !!v.distro, {
     message: 'distro é obrigatório para Linux',
     path: ['distro']
+  })
+  .refine((v) => !v.format || v.os === 'windows' || v.format === 'sh', {
+    message: 'format inválido para este SO: linux/macos só aceitam "sh"',
+    path: ['format']
+  })
+  .refine((v) => !v.format || v.os !== 'windows' || v.format !== 'sh', {
+    message: 'format inválido para este SO: windows aceita "ps1" ou "bat"',
+    path: ['format']
   });
 
 export type InstallScriptRequest = z.infer<typeof installScriptRequestSchema>;
