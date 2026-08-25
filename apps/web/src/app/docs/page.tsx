@@ -25,24 +25,60 @@ export default function DocsPage() {
 
       <Section id="cli" title="CLI — toolkit">
         <p>
-          A CLI open source já está publicada no npm. Instale globalmente ou rode direto com <code>npx</code>,
-          sem instalar nada:
+          Tudo que dá pra fazer no site também dá pra fazer no terminal: buscar apps, ver detalhes e gerar/rodar
+          o script de instalação sem abrir o navegador. Útil pra automatizar a preparação de várias máquinas ou
+          pra quem já vive no terminal.
         </p>
-        <pre className="mt-3 overflow-x-auto rounded-lg bg-bg-subtle p-4 font-mono text-xs leading-relaxed"><code>{`npm install -g @migueltoolkitdev/toolkit-cli
-# ou, sem instalar:
+        <p>Requer Node.js 20.17 ou mais recente instalado (<code>node -v</code> pra conferir).</p>
+
+        <h3 className="pt-2 text-sm font-semibold text-fg">Instalação</h3>
+        <pre className="overflow-x-auto rounded-lg bg-bg-subtle p-4 font-mono text-xs leading-relaxed"><code>{`npm install -g @migueltoolkitdev/toolkit-cli
+# ou, sem instalar nada:
 npx @migueltoolkitdev/toolkit-cli --help`}</code></pre>
-        <p className="mt-3">O binário instalado se chama <code>toolkit</code>:</p>
-        <pre className="mt-3 overflow-x-auto rounded-lg bg-bg-subtle p-4 font-mono text-xs leading-relaxed"><code>{`toolkit search chrome
-toolkit info visual-studio-code
-toolkit install chrome discord vscode git
-toolkit save git nodejs --title "meu setup"
-toolkit profile <code>
-toolkit doctor            # diagnostica SO, gerenciadores de pacote e rede`}</code></pre>
-        <p className="mt-3">
-          <code>toolkit install</code> sempre mostra o script completo e pede confirmação antes de executar
-          (pule com <code>--yes</code>, ou use <code>--dry-run</code> pra só visualizar).
+        <p>O binário instalado se chama <code>toolkit</code>.</p>
+
+        <h3 className="pt-2 text-sm font-semibold text-fg">Comandos</h3>
+        <Command cmd="toolkit search <termo>" desc="Busca apps, categorias e coleções que batem com o termo — a mesma busca do ⌘K do site." />
+        <Command cmd="toolkit info <slug>" desc="Mostra descrição completa, licença, site oficial e todos os métodos de instalação disponíveis (winget, apt, brew etc.) para um app." />
+        <Command
+          cmd="toolkit install <slugs...>"
+          desc="Gera o script de instalação para os apps informados, detectando automaticamente seu SO (e distro, no Linux). Mostra o resumo (quantos automáticos, quantos manuais) e o script inteiro antes de perguntar se deve rodar."
+          flags={[
+            { flag: '-f, --format <ps1|bat|sh>', desc: 'força um formato específico (default: conforme o SO detectado)' },
+            { flag: '-y, --yes', desc: 'pula a confirmação e executa direto' },
+            { flag: '--dry-run', desc: 'só mostra o script, nunca executa' }
+          ]}
+        />
+        <Command
+          cmd="toolkit save <slugs...>"
+          desc="Salva uma lista de apps no servidor e devolve um código curto + link, pra compartilhar ou reinstalar em outra máquina depois."
+          flags={[{ flag: '-t, --title <titulo>', desc: 'dá um nome ao toolkit salvo' }]}
+        />
+        <Command cmd="toolkit profile <code>" desc="Recupera um toolkit salvo pelo código (seu ou de outra pessoa) e oferece instalar tudo de uma vez." />
+        <Command cmd="toolkit doctor" desc="Diagnóstico local: qual SO foi detectado, quais gerenciadores de pacote (winget, apt, dnf, pacman, flatpak, snap, brew) estão disponíveis no PATH, e se a API do Toolkit está acessível." />
+
+        <h3 className="pt-2 text-sm font-semibold text-fg">Exemplo de uso</h3>
+        <pre className="overflow-x-auto rounded-lg bg-bg-subtle p-4 font-mono text-xs leading-relaxed"><code>{`$ toolkit search chrome
+Apps
+  - google-chrome — Google Chrome — Navegador rápido e amplamente compatível.
+
+$ toolkit install google-chrome discord vscode
+3 automático(s) · 0 manual(is) · 0 indisponível(is)
+
+Script (toolkit-instalar-linux.sh)
+#!/usr/bin/env bash
+...
+
+Executar 3 passo(s) automaticamente agora? (Y/n) y`}</code></pre>
+
+        <h3 className="pt-2 text-sm font-semibold text-fg">Configuração (opcional)</h3>
+        <p>
+          <code>TOOLKIT_API_URL</code> aponta a CLI pra outra API (ex.: <code>http://localhost:4000</code> em dev,
+          ou uma instância self-hosted). <code>TOOLKIT_SITE_URL</code> muda a URL usada no link do{' '}
+          <code>toolkit save</code>.
         </p>
-        <p className="mt-3 rounded-lg border border-border bg-card p-3 text-xs text-muted">
+
+        <p className="rounded-lg border border-border bg-card p-3 text-xs text-muted">
           Status: <strong className="text-fg">v1 publicada</strong>. <code>toolkit upgrade</code> (delega para
           winget/apt/dnf/pacman/brew) e <code>toolkit driver scan</code> (hardware local, opt-in) ainda estão no
           roadmap.
@@ -77,6 +113,32 @@ function Section({ id, title, children }: { id?: string; title: string; children
       <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
       <div className="mt-3 space-y-3 text-[13px] leading-relaxed text-muted [&_strong]:text-fg">{children}</div>
     </section>
+  );
+}
+
+function Command({
+  cmd,
+  desc,
+  flags
+}: {
+  cmd: string;
+  desc: string;
+  flags?: { flag: string; desc: string }[];
+}) {
+  return (
+    <div className="rounded-lg border border-border bg-card p-3">
+      <code className="font-mono text-xs font-bold text-fg">{cmd}</code>
+      <p className="mt-1 text-xs">{desc}</p>
+      {flags && flags.length > 0 && (
+        <ul className="mt-2 space-y-1 border-t border-border pt-2">
+          {flags.map((f) => (
+            <li key={f.flag} className="text-xs">
+              <code className="text-primary">{f.flag}</code> — {f.desc}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
