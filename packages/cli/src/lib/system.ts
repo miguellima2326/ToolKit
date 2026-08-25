@@ -8,6 +8,16 @@ export function detectOS(): OperatingSystem {
   return 'linux';
 }
 
+/**
+ * Um prompt interativo (@clack/prompts) tenta colocar stdin em raw mode — sem
+ * um TTY real (pipe, CI, `npx` chamado de dentro de outro processo) isso
+ * derruba o processo com um erro cru do libuv (`uv_tty_init ... EBADF`) em
+ * vez de uma mensagem tratável. Checar antes evita o crash.
+ */
+export function isInteractive(): boolean {
+  return Boolean(process.stdin.isTTY && process.stdout.isTTY);
+}
+
 const DISTRO_ID_MAP: Record<string, LinuxDistro> = {
   ubuntu: 'ubuntu',
   debian: 'debian',

@@ -22,8 +22,11 @@ export function registerInstallScriptRoutes(app: FastifyInstance, { prisma }: { 
       const rows = await repo.getAppsBySlugs(slugs);
       if (rows.length === 0) return reply.code(404).send({ error: 'apps_not_found' });
 
+      const foundSlugs = new Set(rows.map((r) => r.slug));
+      const notFound = slugs.filter((s) => !foundSlugs.has(s));
+
       const generatorApps = rows.map(toGeneratorApp);
-      const result = buildInstallScript(generatorApps, { os, distro: os === 'linux' ? (distro ?? null) : null }, format);
+      const result = { ...buildInstallScript(generatorApps, { os, distro: os === 'linux' ? (distro ?? null) : null }, format), notFound };
 
       await Promise.all([
         repo.incrementScriptsGenerated(),

@@ -6,8 +6,8 @@ import type { InstallScriptResponse, ScriptFormat } from '@toolkit/shared';
 import { Command } from 'commander';
 import * as p from '@clack/prompts';
 import { apiPost, ApiError } from '../lib/api.js';
-import { bullet, dim, heading, printError } from '../lib/format.js';
-import { getOsInfo } from '../lib/system.js';
+import { bullet, dim, heading, printError, printWarning } from '../lib/format.js';
+import { getOsInfo, isInteractive } from '../lib/system.js';
 
 interface InstallOptions {
   format?: ScriptFormat;
@@ -57,6 +57,10 @@ export async function runInstallFlow(slugs: string[], opts: InstallOptions): Pro
 
   spinner.stop(`Script gerado para ${result.target.label}`);
 
+  if (result.notFound.length > 0) {
+    printWarning(`ignorado(s) por não existir no catálogo: ${result.notFound.join(', ')}`);
+  }
+
   console.log(
     `\n${dim(`${result.autoCount} automático(s) · ${result.manualCount} manual(is) · ${result.unavailable.length} indisponível(is)`)}`
   );
@@ -86,6 +90,10 @@ export async function runInstallFlow(slugs: string[], opts: InstallOptions): Pro
   if (opts.dryRun) return;
 
   if (!opts.yes) {
+    if (!isInteractive()) {
+      printWarning('terminal não-interativo — nada foi executado. Use "--yes" pra confirmar sem prompt.');
+      return;
+    }
     const confirmed = await p.confirm({
       message: `Executar ${result.autoCount} passo(s) automaticamente agora?`
     });
