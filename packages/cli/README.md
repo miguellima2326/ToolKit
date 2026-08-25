@@ -1,25 +1,27 @@
-# toolkit-cli
+# @migueltoolkitdev/toolkit-cli
 
 CLI oficial do Toolkit — busca, instala e gerencia apps direto do terminal, consumindo a API pública `/api/v1` (a mesma que o site usa).
 
 ## Instalação
 
 ```bash
-npm install -g toolkit-cli
+npm install -g @migueltoolkitdev/toolkit-cli
 # ou sem instalar:
-npx toolkit-cli --help
+npx @migueltoolkitdev/toolkit-cli --help
 ```
+
+(o nome "toolkit-cli" sem escopo foi recusado pelo registro do npm por ser parecido demais com um pacote já existente — "tool-kit-cli")
 
 O binário instalado se chama `toolkit`.
 
 ## Desenvolvendo no monorepo
 
 ```bash
-pnpm --filter toolkit-cli build
+pnpm --filter @migueltoolkitdev/toolkit-cli build
 node packages/cli/dist/index.js --help
 
 # ou em modo dev, sem build:
-pnpm --filter toolkit-cli dev -- --help
+pnpm --filter @migueltoolkitdev/toolkit-cli dev -- --help
 ```
 
 ## Configuração (opcional)

@@ -1,5 +1,5 @@
 {
-  "name": "toolkit-cli",
+  "name": "@migueltoolkitdev/toolkit-cli",
   "version": "0.1.0",
   "private": false,
   "description": "CLI oficial do Toolkit — busca, instala e gerencia apps direto do terminal",
