@@ -28,7 +28,7 @@ export function Header() {
     { href: '/apps', label: t((d) => d.nav.apps) },
     { href: '/drivers', label: t((d) => d.nav.drivers) },
     { href: '/collections', label: t((d) => d.nav.collections) },
-    { href: '/docs#cli', label: t((d) => d.nav.cli), soon: true },
+    { href: '/docs#cli', label: t((d) => d.nav.cli) },
     { href: '/docs', label: t((d) => d.nav.docs) }
   ];
 
@@ -52,11 +52,6 @@ export function Header() {
               )}
             >
               {link.label}
-              {'soon' in link && link.soon && (
-                <span className="rounded-full border border-border px-1 text-[9px] uppercase text-muted">
-                  {t((d) => d.common.soon)}
-                </span>
-              )}
             </Link>
           ))}
         </nav>

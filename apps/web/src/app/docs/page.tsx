@@ -23,19 +23,29 @@ export default function DocsPage() {
         <Endpoint method="GET" path="/health · /health/detailed" desc="Liveness e readiness." />
       </Section>
 
-      <Section id="cli" title="CLI — toolkit (em breve)">
+      <Section id="cli" title="CLI — toolkit">
         <p>
-          A CLI open source acompanhará o site para uso em terminal:
+          A CLI open source já está publicada no npm. Instale globalmente ou rode direto com <code>npx</code>,
+          sem instalar nada:
         </p>
+        <pre className="mt-3 overflow-x-auto rounded-lg bg-bg-subtle p-4 font-mono text-xs leading-relaxed"><code>{`npm install -g @migueltoolkitdev/toolkit-cli
+# ou, sem instalar:
+npx @migueltoolkitdev/toolkit-cli --help`}</code></pre>
+        <p className="mt-3">O binário instalado se chama <code>toolkit</code>:</p>
         <pre className="mt-3 overflow-x-auto rounded-lg bg-bg-subtle p-4 font-mono text-xs leading-relaxed"><code>{`toolkit search chrome
+toolkit info visual-studio-code
 toolkit install chrome discord vscode git
-toolkit profile developer
-toolkit upgrade          # delega para winget/apt/dnf/pacman/brew
-toolkit doctor           # diagnostica SO, gerenciadores e rede
-toolkit driver scan      # hardware local (opt-in)`}</code></pre>
+toolkit save git nodejs --title "meu setup"
+toolkit profile <code>
+toolkit doctor            # diagnostica SO, gerenciadores de pacote e rede`}</code></pre>
+        <p className="mt-3">
+          <code>toolkit install</code> sempre mostra o script completo e pede confirmação antes de executar
+          (pule com <code>--yes</code>, ou use <code>--dry-run</code> pra só visualizar).
+        </p>
         <p className="mt-3 rounded-lg border border-border bg-card p-3 text-xs text-muted">
-          Status: <strong className="text-fg">Fase 2 do roadmap</strong>. Esta página será atualizada com
-          instruções de instalação quando o primeiro binário assinado for publicado.
+          Status: <strong className="text-fg">v1 publicada</strong>. <code>toolkit upgrade</code> (delega para
+          winget/apt/dnf/pacman/brew) e <code>toolkit driver scan</code> (hardware local, opt-in) ainda estão no
+          roadmap.
         </p>
       </Section>
 
