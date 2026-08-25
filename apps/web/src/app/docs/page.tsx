@@ -71,13 +71,6 @@ Script (toolkit-instalar-linux.sh)
 
 Executar 3 passo(s) automaticamente agora? (Y/n) y`}</code></pre>
 
-        <h3 className="pt-2 text-sm font-semibold text-fg">Configuração (opcional)</h3>
-        <p>
-          <code>TOOLKIT_API_URL</code> aponta a CLI pra outra API (ex.: <code>http://localhost:4000</code> em dev,
-          ou uma instância self-hosted). <code>TOOLKIT_SITE_URL</code> muda a URL usada no link do{' '}
-          <code>toolkit save</code>.
-        </p>
-
         <p className="rounded-lg border border-border bg-card p-3 text-xs text-muted">
           Status: <strong className="text-fg">v1 publicada</strong>. <code>toolkit upgrade</code> (delega para
           winget/apt/dnf/pacman/brew) e <code>toolkit driver scan</code> (hardware local, opt-in) ainda estão no
