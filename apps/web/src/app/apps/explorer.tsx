@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { SlidersHorizontal, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight, SlidersHorizontal, Star } from 'lucide-react';
 import type { AppSummary } from '@toolkit/shared';
 import { LICENSE_LABELS, LICENSE_TYPES, METHOD_LABELS, OS_LABELS, OPERATING_SYSTEMS, cn } from '@toolkit/shared';
 import { apiFetch } from '@/lib/api';
@@ -19,6 +19,7 @@ export interface Filters {
   license?: string;
   method?: string;
   sort?: string;
+  page: number;
 }
 
 interface Props {
@@ -32,6 +33,8 @@ const SORTS = [
   { value: 'recent', label: 'Mais recentes' },
   { value: 'name', label: 'A-Z' }
 ];
+
+export const PAGE_SIZE = 24;
 
 export function Explorer({ initial, initialFilters, categories }: Props) {
   const router = useRouter();
@@ -49,7 +52,8 @@ export function Explorer({ initial, initialFilters, categories }: Props) {
     arch: searchParams.get('arch') ?? undefined,
     license: searchParams.get('license') ?? undefined,
     method: searchParams.get('method') ?? undefined,
-    sort: searchParams.get('sort') ?? 'popular'
+    sort: searchParams.get('sort') ?? 'popular',
+    page: Math.max(1, Number(searchParams.get('page') ?? 1) || 1)
   };
 
   const isDefaultState =
@@ -58,18 +62,18 @@ export function Explorer({ initial, initialFilters, categories }: Props) {
   const { data, isFetching } = useQuery({
     queryKey: ['apps', filters, favoritesOnly],
     queryFn: async () => {
+      const params = new URLSearchParams();
+      Object.entries(filters).forEach(([k, v]) => {
+        if (v && !(k === 'page' && (v as number) === 1)) params.set(k, String(v));
+      });
       if (favoritesOnly) {
-        const params = new URLSearchParams();
-        Object.entries(filters).forEach(([k, v]) => v && params.set(k, String(v)));
         params.set('limit', '48');
         const res = await apiFetch<{ data: AppSummary[]; meta: { total: number } }>(
           `/apps?${params.toString()}`
         );
         return { ...res, data: res.data.filter((a) => favorites.includes(a.slug)) };
       }
-      const params = new URLSearchParams();
-      Object.entries(filters).forEach(([k, v]) => v && params.set(k, String(v)));
-      params.set('limit', '48');
+      params.set('limit', String(PAGE_SIZE));
       return apiFetch<{ data: AppSummary[]; meta: { total: number } }>(`/apps?${params.toString()}`);
     },
     initialData: isDefaultState ? { data: initial.apps, meta: { total: initial.total } } : undefined,
@@ -77,7 +81,7 @@ export function Explorer({ initial, initialFilters, categories }: Props) {
   });
 
   const update = (patch: Partial<Filters>) => {
-    const next = { ...filters, ...patch };
+    const next = { ...filters, ...patch, page: patch.page ?? 1 };
     const params = new URLSearchParams();
     if (next.q) params.set('q', next.q);
     if (next.category) params.set('category', next.category);
@@ -86,8 +90,22 @@ export function Explorer({ initial, initialFilters, categories }: Props) {
     if (next.license) params.set('license', next.license);
     if (next.method) params.set('method', next.method);
     if (next.sort && next.sort !== 'popular') params.set('sort', next.sort);
-    router.replace(params.toString() ? `/apps?${params.toString()}` : '/apps', { scroll: false });
+    if (next.page > 1) params.set('page', String(next.page));
+    router.replace(params.toString() ? `/apps?${params.toString()}` : '/apps', {
+      scroll: (patch.page ?? 1) > 1
+    });
   };
+
+  const totalPages = Math.max(1, Math.ceil((data?.meta.total ?? 0) / PAGE_SIZE));
+  const currentPage = Math.min(filters.page, totalPages);
+  const pageNumbers = useMemo(() => {
+    const span = 2;
+    const start = Math.max(1, currentPage - span);
+    const end = Math.min(totalPages, currentPage + span);
+    const out: number[] = [];
+    for (let p = start; p <= end; p++) out.push(p);
+    return out;
+  }, [currentPage, totalPages]);
 
   const hasActiveFilters =
     !!filters.category || !!filters.os || !!filters.arch || !!filters.license || !!filters.method || favoritesOnly;
@@ -241,6 +259,61 @@ export function Explorer({ initial, initialFilters, categories }: Props) {
               ))}
             </div>
           )}
+
+          {!favoritesOnly && totalPages > 1 && (
+            <nav className="mt-8 flex items-center justify-center gap-1.5" aria-label="Paginação">
+              <button
+                type="button"
+                disabled={currentPage <= 1}
+                onClick={() => update({ page: currentPage - 1 })}
+                aria-label={t((d) => d.explorer.prevPage)}
+                className={cn(
+                  'inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card transition-colors',
+                  currentPage <= 1 ? 'opacity-40' : 'hover:border-primary hover:text-primary'
+                )}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              {pageNumbers[0]! > 1 && (
+                <>
+                  <PageButton page={1} active={currentPage === 1} onClick={() => update({ page: 1 })} />
+                  {pageNumbers[0]! > 2 && <span className="px-1 text-xs text-muted">…</span>}
+                </>
+              )}
+              {pageNumbers.map((p) => (
+                <PageButton key={p} page={p} active={p === currentPage} onClick={() => update({ page: p })} />
+              ))}
+              {pageNumbers[pageNumbers.length - 1]! < totalPages && (
+                <>
+                  {pageNumbers[pageNumbers.length - 1]! < totalPages - 1 && (
+                    <span className="px-1 text-xs text-muted">…</span>
+                  )}
+                  <PageButton
+                    page={totalPages}
+                    active={currentPage === totalPages}
+                    onClick={() => update({ page: totalPages })}
+                  />
+                </>
+              )}
+              <button
+                type="button"
+                disabled={currentPage >= totalPages}
+                onClick={() => update({ page: currentPage + 1 })}
+                aria-label={t((d) => d.explorer.nextPage)}
+                className={cn(
+                  'inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card transition-colors',
+                  currentPage >= totalPages ? 'opacity-40' : 'hover:border-primary hover:text-primary'
+                )}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+              <span className="ml-2 text-xs text-muted" suppressHydrationWarning>
+                {t((d) => d.explorer.pageInfo)
+                  .replace('{page}', String(currentPage))
+                  .replace('{total}', String(totalPages))}
+              </span>
+            </nav>
+          )}
         </div>
       </div>
 
@@ -291,6 +364,25 @@ function Chip({
       )}
     >
       {children}
+    </button>
+  );
+}
+
+function PageButton({ page, active, onClick }: { page: number; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`Página ${page}`}
+      aria-current={active ? 'page' : undefined}
+      className={cn(
+        'inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-2 text-[13px] font-medium transition-colors',
+        active
+          ? 'border-primary bg-primary-soft text-primary'
+          : 'border-border bg-card text-muted hover:border-primary hover:text-primary'
+      )}
+    >
+      {page}
     </button>
   );
 }

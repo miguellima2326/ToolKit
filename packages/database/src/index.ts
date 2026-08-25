@@ -1,7 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { ensureEnvLoaded } from './env-loader';
 
 ensureEnvLoaded();
+
+export { Prisma };
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 

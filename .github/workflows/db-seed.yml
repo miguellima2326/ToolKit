@@ -1,0 +1,54 @@
+name: Seed produção
+
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: seed-producao
+  cancel-in-progress: false
+
+jobs:
+  seed:
+    name: Migrate + seed no Postgres de produção
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Verificar secret PROD_DATABASE_URL
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Secret PROD_DATABASE_URL ausente. Configure em Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - name: Garantir sslmode=require na URL pública
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: |
+          if [[ "$DATABASE_URL" != *sslmode=* ]]; then
+            if [[ "$DATABASE_URL" == *\?* ]]; then
+              echo "DATABASE_URL=${DATABASE_URL}&sslmode=require" >> "$GITHUB_ENV"
+            else
+              echo "DATABASE_URL=${DATABASE_URL}?sslmode=require" >> "$GITHUB_ENV"
+            fi
+          fi
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prisma migrate deploy
+        run: pnpm --filter @toolkit/database exec prisma migrate deploy
+
+      - name: Seed do catálogo (upsert idempotente)
+        run: pnpm db:seed

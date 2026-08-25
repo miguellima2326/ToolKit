@@ -39,7 +39,13 @@ Usuário ──▶ Vercel (apps/web, Next.js) ──RSC──▶ PostgreSQL (Rai
 4. Settings → Networking → **Generate Domain** (pública). Essa é a `NEXT_PUBLIC_API_URL` do passo 2.
 
 ### 1.3 Migrar + popular
-Na sua máquina, contra a URL **pública** do Postgres:
+
+**Via GitHub Actions (recomendado):**
+
+1. Adicione o secret `PROD_DATABASE_URL` no repo (**Settings → Secrets and variables → Actions → New repository secret**) com a `DATABASE_URL_PUBLIC` do Postgres.
+2. Rode **Actions → Seed produção → Run workflow**. O workflow aplica migrations e roda o seed (upsert idempotente) contra o banco de produção.
+
+**Manual (alternativa)** — na sua máquina, contra a URL **pública** do Postgres:
 
 ```bash
 export DATABASE_URL="<DATABASE_URL_PUBLIC>"

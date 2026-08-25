@@ -1,6 +1,7 @@
 import type { InstallMethod } from './constants';
 
-const WINGET_ID = /^[A-Za-z0-9][A-Za-z0-9.\-_]*$/;
+// '+' é legítimo em IDs do winget (ex.: Microsoft.VCRedist.2015+.x64) e apt
+const WINGET_ID = /^[A-Za-z0-9][A-Za-z0-9.\-_+]*$/;
 const SIMPLE_ID = /^[a-z0-9][a-z0-9+.\-_]*$/;
 const FLATPAK_ID = /^[A-Za-z][A-Za-z0-9_-]*(\.[A-Za-z0-9_-]+)+$/;
 const BREW_NAME = /^[a-z0-9][a-z0-9@.\-_]*$/;

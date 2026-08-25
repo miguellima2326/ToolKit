@@ -4,7 +4,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, CornerDownLeft, Search, Terminal } from 'lucide-react';
 import type { SearchResponse } from '@toolkit/shared';
-import { apiFetch } from '@/lib/api';
 import { AppIcon } from './app-icon';
 import { LogoMark } from './logo';
 
@@ -69,14 +68,15 @@ export function SearchPalette() {
     setLoading(true);
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
-      void apiFetch<{ data: SearchResponse }>(`/search?q=${encodeURIComponent(query.trim())}`, {
-        signal: controller.signal
-      })
-        .then((r) => {
+      // Busca no próprio app (mesma origem, lê o Postgres direto) — sem
+      // depender da API externa; se falhar, mostra fallback com link p/ /apps?q=
+      fetch(`/api/search?q=${encodeURIComponent(query.trim())}`, { signal: controller.signal })
+        .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+        .then((r: { data: SearchResponse }) => {
           setResults(r.data);
           setActiveIndex(0);
         })
-        .catch(() => undefined)
+        .catch(() => setResults(null))
         .finally(() => setLoading(false));
     }, 160);
     return () => {
@@ -93,6 +93,16 @@ export function SearchPalette() {
         id: `app-${app.slug}`,
         label: app.name,
         hint: `${app.developer} · ${app.category}`,
+        group: 'Apps',
+        href: `/apps/${app.slug}`,
+        icon: { slug: app.iconKey, name: app.name, color: app.color }
+      });
+    }
+    for (const app of results?.didYouMean ?? []) {
+      list.push({
+        id: `dym-${app.slug}`,
+        label: app.name,
+        hint: `Você quis dizer? · ${app.category}`,
         group: 'Apps',
         href: `/apps/${app.slug}`,
         icon: { slug: app.iconKey, name: app.name, color: app.color }

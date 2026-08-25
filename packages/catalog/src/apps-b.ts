@@ -24,7 +24,7 @@ export const appsB: CatalogApp[] = [
     color: '#007ACC',
     popularity: 98,
     updatedDaysAgo: 1,
-    tags: ['editor de código', 'ide', 'microsoft', 'typescript', 'python'],
+    tags: ['editor de código', 'ide', 'microsoft', 'typescript', 'python', 'visual studio', 'vscode', 'visual'],
     oss: ['windows', 'macos', 'linux'],
     archs: ['x64', 'arm64'],
     alternatives: ['cursor', 'zed', 'vscodium'],

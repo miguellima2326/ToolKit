@@ -311,7 +311,7 @@ export const appsC: CatalogApp[] = [
     color: '#D83B01',
     popularity: 65,
     updatedDaysAgo: 7,
-    tags: ['office', 'escritório', 'produtividade', 'word', 'excel'],
+    tags: ['office', 'escritório', 'produtividade', 'word', 'excel', 'powerpoint', 'outlook', 'planilha', 'apresentação', 'editor de texto'],
     oss: ['windows', 'macos'],
     archs: ['x64', 'arm64'],
     alternatives: ['libreoffice', 'onlyoffice-editors'],

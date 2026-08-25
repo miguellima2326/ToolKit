@@ -12,6 +12,8 @@ export async function getStats() {
   return { apps, drivers, sharedKits, categories, scriptsGenerated: stat?.total ?? 0 };
 }
 
+export const APPS_PAGE_SIZE = 24;
+
 export async function listAppsFiltered(params: {
   q?: string;
   category?: string;
@@ -20,6 +22,7 @@ export async function listAppsFiltered(params: {
   license?: string;
   method?: string;
   sort?: string;
+  page?: number;
 }): Promise<{ apps: ReturnType<typeof toSummary>[]; total: number }> {
   const where: Record<string, unknown> = { status: { not: 'blocked' } };
   if (params.category) where.category = { slug: params.category };
@@ -46,13 +49,15 @@ export async function listAppsFiltered(params: {
         ? { name: 'asc' as const }
         : { popularity: 'desc' as const };
 
+  const page = Math.max(1, params.page ?? 1);
   const [total, rows] = await Promise.all([
     prisma.app.count({ where }),
     prisma.app.findMany({
       where,
       include: { vendor: true, category: true },
       orderBy,
-      take: 48
+      skip: (page - 1) * APPS_PAGE_SIZE,
+      take: APPS_PAGE_SIZE
     })
   ]);
   return { total, apps: rows.map(toSummary) };
