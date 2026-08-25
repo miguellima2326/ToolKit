@@ -1,10 +1,10 @@
 import { Command } from 'commander';
 import * as p from '@clack/prompts';
 import { apiPost, ApiError, SITE_URL } from '../lib/api.js';
-import { heading, printError } from '../lib/format.js';
+import { heading, printError, printWarning } from '../lib/format.js';
 
 interface CreateToolkitResponse {
-  data: { code: string; createdAt: string };
+  data: { code: string; createdAt: string; notFound: string[] };
 }
 
 export function registerSaveCommand(program: Command): void {
@@ -24,9 +24,16 @@ export function registerSaveCommand(program: Command): void {
         console.log(`\n${heading('Código:')} ${data.code}`);
         console.log(`${heading('Link:')} ${SITE_URL}/s/${data.code}`);
         console.log(`\nPara reinstalar depois: ${'`'}toolkit profile ${data.code}${'`'}`);
+        if (data.notFound.length > 0) {
+          printWarning(`ignorado(s) por não existir no catálogo: ${data.notFound.join(', ')}`);
+        }
       } catch (err) {
         spinner.stop('Falha ao salvar');
-        printError(err instanceof ApiError ? err.message : String(err));
+        if (err instanceof ApiError && err.status === 404) {
+          printError('Nenhum dos apps informados foi encontrado. Tente "toolkit search <termo>".');
+        } else {
+          printError(err instanceof ApiError ? err.message : String(err));
+        }
         process.exitCode = 1;
       }
     });

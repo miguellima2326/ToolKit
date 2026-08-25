@@ -2,7 +2,8 @@ import type { AppSummary } from '@toolkit/shared';
 import { Command } from 'commander';
 import * as p from '@clack/prompts';
 import { apiGet, ApiError } from '../lib/api.js';
-import { bullet, dim, heading, printError } from '../lib/format.js';
+import { bullet, dim, heading, printError, printWarning } from '../lib/format.js';
+import { isInteractive } from '../lib/system.js';
 import { runInstallFlow } from './install.js';
 
 interface ToolkitProfile {
@@ -41,6 +42,11 @@ export function registerProfileCommand(program: Command): void {
       }
 
       if (profile.apps.length === 0) return;
+
+      if (!isInteractive()) {
+        printWarning('terminal não-interativo — pulando a confirmação. Use "toolkit install <slugs...>" diretamente.');
+        return;
+      }
 
       const install = await p.confirm({ message: 'Instalar todos agora?' });
       if (p.isCancel(install) || !install) return;
