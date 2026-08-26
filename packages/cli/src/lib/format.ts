@@ -23,3 +23,7 @@ export function bullet(text: string): string {
 export function printError(message: string): void {
   console.error(`${pc.red('erro:')} ${message}`);
 }
+
+export function printWarning(message: string): void {
+  console.error(`${pc.yellow('aviso:')} ${message}`);
+}

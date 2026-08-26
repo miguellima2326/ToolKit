@@ -16,12 +16,23 @@ export function registerToolkitRoutes(app: FastifyInstance, { prisma }: { prisma
       if (!parsed.success) {
         return reply.code(400).send({ error: 'invalid_input', details: parsed.error.flatten() });
       }
+
+      // slugs inexistentes no catálogo não viram entrada — sem essa checagem
+      // eles ficam gravados no toolkit compartilhado e somem silenciosamente
+      // na hora de resolver (GET /toolkits/:code e "toolkit profile" no CLI
+      // simplesmente não encontram a linha, sem sinalizar nada pro usuário).
+      const foundApps = await repo.getAppsBySlugs(parsed.data.slugs);
+      const foundSlugs = new Set(foundApps.map((a) => a.slug));
+      const validSlugs = parsed.data.slugs.filter((s) => foundSlugs.has(s));
+      const notFound = parsed.data.slugs.filter((s) => !foundSlugs.has(s));
+      if (validSlugs.length === 0) return reply.code(404).send({ error: 'apps_not_found' });
+
       const code = nanoid(8).replace(/[^a-z0-9]/g, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)] ?? 't').padEnd(8, 't');
       const created = await prisma.sharedToolkit.create({
-        data: { code, title: parsed.data.title ?? null, slugs: parsed.data.slugs }
+        data: { code, title: parsed.data.title ?? null, slugs: validSlugs }
       });
-      await repo.audit('anonymous', 'toolkit.shared', code, { apps: parsed.data.slugs.length });
-      return reply.code(201).send({ data: { code: created.code, createdAt: created.createdAt.toISOString() } });
+      await repo.audit('anonymous', 'toolkit.shared', code, { apps: validSlugs.length });
+      return reply.code(201).send({ data: { code: created.code, createdAt: created.createdAt.toISOString(), notFound } });
     }
   );
 

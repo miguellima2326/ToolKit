@@ -156,7 +156,8 @@ export const installScriptResponseSchema = z.object({
   autoCount: z.number().int().min(0),
   manualCount: z.number().int().min(0),
   manual: z.array(manualInstallSchema),
-  unavailable: z.array(z.object({ slug: slugSchema, name: z.string(), reason: z.string() }))
+  unavailable: z.array(z.object({ slug: slugSchema, name: z.string(), reason: z.string() })),
+  notFound: z.array(slugSchema)
 });
 
 export type InstallScriptResponse = z.infer<typeof installScriptResponseSchema>;
