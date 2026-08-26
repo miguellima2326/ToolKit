@@ -85,6 +85,29 @@ export const appsC: CatalogApp[] = [
       PC('opencode')
     ]
   }),
+  a({
+    slug: 'antigravity-cli',
+    name: 'Antigravity CLI',
+    vendor: 'Google',
+    categorySlug: 'ia',
+    tagline: 'Agente de codificação do Google no terminal (comando agy).',
+    description:
+      'CLI oficial do Google para o agente Antigravity: raciocínio em múltiplas etapas, edição multiarquivo e orquestração de agentes direto no terminal, com foco em workflows via teclado e sessões SSH remotas. Binário Go nativo, sem depender de Node.js.',
+    websiteUrl: 'https://antigravity.google/docs/cli/getting-started/',
+    license: 'freemium',
+    color: '#7C3AED',
+    popularity: 52,
+    updatedDaysAgo: 1,
+    tags: ['ia', 'cli', 'agente', 'google', 'terminal'],
+    oss: ['windows', 'macos', 'linux'],
+    archs: ['x64', 'arm64'],
+    alternatives: ['claude-code', 'codex-cli', 'opencode', 'google-antigravity'],
+    packages: [
+      W('Google.AntigravityCLI'),
+      BC('antigravity-cli'),
+      DL('https://antigravity.google/docs/cli/install/', 'linux')
+    ]
+  }),
 
   // ── IDEs ────────────────────────────────────────────────────────────────
   a({
